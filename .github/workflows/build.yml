@@ -1,4 +1,5 @@
 name: Build
+
 on:
   push:
     branches:
@@ -7,28 +8,41 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  validar:
+    name: Validar codigo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Checar sintaxe de todos os .js
+        run: |
+          find . -name "*.js" -not -path "./node_modules/*" -print0 \
+            | xargs -0 -n1 node --check
+
+      # Descomente quando o projeto tiver package.json com estes scripts:
+      # - run: npm ci
+      # - run: npm run lint
+      # - run: npm test
+
   sonarcloud:
     name: SonarCloud Analysis
+    needs: validar
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Verificar SONAR_TOKEN
-        shell: bash
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          if [ -z "$SONAR_TOKEN" ]; then
-            echo "SONAR_TOKEN VAZIO"
-            exit 1
-          else
-            echo "SONAR_TOKEN definido (${#SONAR_TOKEN} caracteres)"
-          fi
-
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703 # v5.3.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
