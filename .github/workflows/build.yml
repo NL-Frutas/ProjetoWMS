@@ -5,6 +5,7 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   sonarcloud:
     name: SonarCloud Analysis
@@ -12,10 +13,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Desabilita clones rasos para melhor relevância da análise
+          fetch-depth: 0
+
+      - name: Verificar SONAR_TOKEN
+        shell: bash
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "SONAR_TOKEN VAZIO"
+            exit 1
+          else
+            echo "SONAR_TOKEN definido (${#SONAR_TOKEN} caracteres)"
+          fi
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Obrigatório para a nuvem se comunicar com o PR
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # O token que você configurou nos Secrets
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
