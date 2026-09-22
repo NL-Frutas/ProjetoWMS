@@ -12,4 +12,6 @@ function aplicarDesconto(total, percentual) {
   return total - (total * percentual) / 100;
 }
 
+console.log("testando a acuracia da IA")
+
 module.exports = { calcularTotal, aplicarDesconto };
