@@ -19,7 +19,7 @@ jobs:
           node-version: 20
 
       - name: Instalar dependências
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Checar sintaxe de todos os .js
         run: |
@@ -43,7 +43,7 @@ jobs:
           node-version: 20
 
       - name: Instalar dependências
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Rodar testes com cobertura
         run: npm run coverage
