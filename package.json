@@ -1,0 +1,25 @@
+{
+  "name": "projetowms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test",
+    "coverage": "c8 --reporter=lcov --reporter=text node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NL-Frutas/ProjetoWMS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NL-Frutas/ProjetoWMS/issues"
+  },
+  "homepage": "https://github.com/NL-Frutas/ProjetoWMS#readme",
+  "devDependencies": {
+    "c8": "^12.0.0"
+  }
+}
