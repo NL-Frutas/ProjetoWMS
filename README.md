@@ -370,4 +370,6 @@ O restante do pipeline (checkout, secrets, `needs: validar`, `sonar.qualitygate.
 
 ## Autor
 
-**Julio Santos**
+**Julio Santos** 💻
+Desenvolvedor de Software
+Criado em 22/09/2026
