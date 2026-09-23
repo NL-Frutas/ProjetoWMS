@@ -430,5 +430,5 @@ chore: atualiza dependências de desenvolvimento
 ## Autor
 
 **Julio Santos** 💻
-- Desenvolvedor de Software - 
+Desenvolvedor de Software - 
 (Criado em 22/09/2026)
