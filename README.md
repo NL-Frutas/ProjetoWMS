@@ -441,4 +441,4 @@ chore: atualiza dependências de desenvolvimento
 
 **Julio Santos** 💻
 Desenvolvedor de Software
-Criado em 22/09/2026
+(Criado em 22/09/2026)
