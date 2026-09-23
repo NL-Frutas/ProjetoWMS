@@ -1,5 +1,9 @@
 # Integração SonarQube Cloud + GitHub Actions
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NL-Frutas_ProjetoWMS&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=NL-Frutas_ProjetoWMS)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NL-Frutas_ProjetoWMS&metric=coverage)](https://sonarcloud.io/summary/new_code?id=NL-Frutas_ProjetoWMS)
+[![Build](https://github.com/NL-Frutas/ProjetoWMS/actions/workflows/build.yml/badge.svg)](https://github.com/NL-Frutas/ProjetoWMS/actions/workflows/build.yml)
+
 Guia de referência para configurar análise de qualidade de código com o **SonarQube Cloud** integrado ao **GitHub Actions**, usando bloqueio automático de Pull Requests via Quality Gate.
 
 Este repositório (`ProjetoWMS`) é um ambiente de testes, usado para validar e documentar esse fluxo de integração antes de aplicá-lo a um repositório definitivo.
@@ -356,10 +360,12 @@ tipo(escopo opcional): descrição curta no imperativo
 | `refactor` | Reestruturação de código sem alterar comportamento |
 | `perf` | Melhoria de performance |
 | `test` | Adição ou ajuste de testes |
-| `build` | Mudanças que afetam o processo de build ou dependências |
-| `ci` | Mudanças em arquivos e scripts de integração contínua (ex.: `build.yml`) |
-| `chore` | Tarefas de manutenção que não afetam código-fonte nem testes |
+| `build` | Mudanças no processo de build ou em dependências que afetam o artefato final |
+| `ci` | Mudanças em arquivos e scripts de integração contínua (ex.: `build.yml`, secrets, runners) |
+| `chore` | Manutenção que não afeta código, testes nem build (dependências de dev, `.gitignore`, limpeza) |
 | `revert` | Reversão de um commit anterior |
+
+> **`build` x `chore`:** os dois mexem em dependências e configuração, mas com alvos diferentes. `build` é para o que impacta o artefato final ou o processo de compilação/empacotamento (uma lib de produção, a versão do compilador). `chore` é para o resto: ferramentas de desenvolvimento (linter, formatter), arquivos administrativos, limpeza. Na dúvida, "isso muda o que roda em produção?" — se sim, `build`; se não, `chore`.
 
 ### Exemplos
 
@@ -407,6 +413,10 @@ chore: atualiza dependências de desenvolvimento
 | `"npx" can install packages on-demand...` | Uso de `npx` no workflow | Instalar a dependência via `package.json` e rodar pelo script do `npm` |
 | `Omitting "--ignore-scripts" allows lifecycle scripts...` | `npm ci`/`npm i` sem a flag | Adicionar `--ignore-scripts` ao comando |
 | Botão de merge bloqueado com "This branch is out-of-date" | A `main` recebeu commits novos após a criação da branch do PR | Clicar em **Update branch** no PR, ou rodar `git merge origin/main` localmente |
+| `npm error enoent Could not read package.json` | O arquivo `package.json` não existe na pasta local | Rodar `npm init -y` e preencher os scripts `test`/`coverage` |
+| `'c8' não é reconhecido como um comando` | Pacote não instalado, ou PATH da sessão desatualizado | Rodar `npm install --save-dev c8`; se persistir, usar `npx c8 ...` localmente (nunca no CI) ou reabrir o terminal |
+| Check obrigatório fica em "Waiting for status to be reported" para sempre | A regra de proteção exige um check com nome que não existe mais no workflow atual | Remover o check antigo da lista de **Require status checks to pass** e adicionar o nome atual do job |
+| `git push` rejeitado com "Updates were rejected" | A branch remota recebeu commits (ex.: via botão **Update branch**) que não estão na cópia local | Rodar `git pull origin nome-da-branch` antes do push |
 
 ## Fluxo de contribuição
 
@@ -430,5 +440,5 @@ chore: atualiza dependências de desenvolvimento
 ## Autor
 
 **Julio Santos** 💻
-Desenvolvedor de Software - 
-(Criado em 22/09/2026)
+Desenvolvedor de Software
+Criado em 22/09/2026
