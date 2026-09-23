@@ -381,7 +381,7 @@ chore: atualiza dependências de desenvolvimento
 
 ### Boas práticas
 
-- **Descrição no imperativo**, como se completasse a frase "esse commit vai...": `adiciona`, `corrige`, `remove`, e não `adicionado` ou `adicionando`.
+- **Descrição no imperativo**, como se completasse a frase "esse commit...": `adiciona`, `corrige`, `remove`, e não `adicionado` ou `adicionando`.
 - **Um commit, uma intenção.** Evitar misturar `feat` com `fix` no mesmo commit; se necessário, separar em commits distintos.
 - **Corpo do commit opcional, para explicar o "porquê"**, quando o título não for suficiente:
   ```
