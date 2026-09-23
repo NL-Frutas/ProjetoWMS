@@ -20,6 +20,7 @@ Este repositório (`ProjetoWMS`) é um ambiente de testes, usado para validar e 
 - [Adaptando para outras linguagens](#adaptando-para-outras-linguagens)
 - [Boas práticas de segurança aplicadas](#boas-práticas-de-segurança-aplicadas)
 - [Boas práticas gerais do fluxo](#boas-práticas-gerais-do-fluxo)
+- [Padrão de commits](#padrão-de-commits)
 - [Erros comuns e soluções](#erros-comuns-e-soluções)
 - [Fluxo de contribuição](#fluxo-de-contribuição)
 - [Autor](#autor)
@@ -336,6 +337,64 @@ O restante do pipeline (checkout, secrets, `needs: validar`, `sonar.qualitygate.
 - **Regra de proteção sem bypass.** Deixar a lista de bypass do ruleset vazia garante que nem administradores pulem os checks obrigatórios, mantendo o Quality Gate como barreira real, e não apenas recomendação.
 - **Revisar a lista de checks obrigatórios após qualquer mudança no workflow.** Se o nome de um job mudar (ex.: `Validar codigo` para outro nome), o check antigo continua "esperado" na regra de proteção e trava os PRs até ser atualizado.
 
+## Padrão de commits
+
+O repositório segue o padrão **[Conventional Commits](https://www.conventionalcommits.org/)**, que facilita a leitura do histórico, permite gerar changelog automaticamente e deixa claro o impacto de cada commit antes mesmo de abrir o Pull Request.
+
+```
+tipo(escopo opcional): descrição curta no imperativo
+```
+
+### Tipos mais usados
+
+| Tipo | Quando usar |
+|---|---|
+| `feat` | Uma nova funcionalidade |
+| `fix` | Correção de bug |
+| `docs` | Alteração apenas em documentação (ex.: README) |
+| `style` | Formatação, espaçamento, ponto e vírgula — sem mudança de lógica |
+| `refactor` | Reestruturação de código sem alterar comportamento |
+| `perf` | Melhoria de performance |
+| `test` | Adição ou ajuste de testes |
+| `build` | Mudanças que afetam o processo de build ou dependências |
+| `ci` | Mudanças em arquivos e scripts de integração contínua (ex.: `build.yml`) |
+| `chore` | Tarefas de manutenção que não afetam código-fonte nem testes |
+| `revert` | Reversão de um commit anterior |
+
+### Exemplos
+
+```
+feat: adiciona endpoint de consulta de estoque
+fix: corrige cálculo de desconto com percentual negativo
+docs: atualiza README com guia de adaptação para outras linguagens
+test: adiciona cobertura para aplicarDesconto
+ci: fixa hash da sonarqube-scan-action e remove uso de npx
+refactor: extrai validação de preço para função separada
+chore: atualiza dependências de desenvolvimento
+```
+
+### Boas práticas
+
+- **Descrição no imperativo**, como se completasse a frase "esse commit vai...": `adiciona`, `corrige`, `remove`, e não `adicionado` ou `adicionando`.
+- **Um commit, uma intenção.** Evitar misturar `feat` com `fix` no mesmo commit; se necessário, separar em commits distintos.
+- **Corpo do commit opcional, para explicar o "porquê"**, quando o título não for suficiente:
+  ```
+  fix: corrige cálculo de desconto com percentual negativo
+
+  O Sonar apontou que percentuais fora do intervalo 0-100 não eram
+  validados, permitindo total negativo. Adicionada validação e teste
+  correspondente.
+  ```
+- **`BREAKING CHANGE` no rodapé**, quando o commit quebra compatibilidade com o uso anterior:
+  ```
+  feat: altera assinatura de calcularTotal
+
+  BREAKING CHANGE: calcularTotal agora recebe um objeto { preco, quantidade }
+  em vez de dois parâmetros separados.
+  ```
+- **Título curto** (até ~72 caracteres), sem ponto final.
+- **Mensagens em português**, mantendo consistência com o restante da documentação e dos comentários do projeto.
+
 ## Erros comuns e soluções
 
 | Sintoma | Causa provável | Solução |
@@ -355,7 +414,7 @@ O restante do pipeline (checkout, secrets, `needs: validar`, `sonar.qualitygate.
    ```bash
    git checkout -b nome-da-branch
    ```
-2. Implementar a alteração, sempre acompanhada de teste correspondente.
+2. Implementar a alteração, sempre acompanhada de teste correspondente, usando o [padrão de commits](#padrão-de-commits) do repositório.
 3. Validar localmente antes do push:
    ```bash
    npm test
@@ -371,5 +430,5 @@ O restante do pipeline (checkout, secrets, `needs: validar`, `sonar.qualitygate.
 ## Autor
 
 **Julio Santos** 💻
-Desenvolvedor de Software
-Criado em 22/09/2026
+- Desenvolvedor de Software - 
+(Criado em 22/09/2026)
