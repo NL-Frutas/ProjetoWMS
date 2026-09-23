@@ -21,6 +21,7 @@ Este repositório (`ProjetoWMS`) é um ambiente de testes, usado para validar e 
 - [Estrutura de arquivos](#estrutura-de-arquivos)
 - [Testes e cobertura](#testes-e-cobertura)
 - [Quality Gate](#quality-gate)
+- [Testes realizados para validar a integração](#testes-realizados-para-validar-a-integração)
 - [Adaptando para outras linguagens](#adaptando-para-outras-linguagens)
 - [Boas práticas de segurança aplicadas](#boas-práticas-de-segurança-aplicadas)
 - [Boas práticas gerais do fluxo](#boas-práticas-gerais-do-fluxo)
@@ -213,6 +214,28 @@ O gate padrão do SonarQube Cloud é o **Sonar way**, que avalia principalmente 
 
 Ambas são soluções temporárias. O ideal é reverter assim que os testes existirem.
 
+## Testes realizados para validar a integração
+
+Antes de considerar o pipeline pronto, foram feitos testes deliberados, cada um propositalmente escrito para violar uma regra específica, confirmando que a camada correspondente realmente bloqueia o que deveria.
+
+| # | O que foi testado | Como | Resultado esperado | Resultado obtido |
+|---|---|---|---|---|
+| 1 | Erro de sintaxe | Commit com uma linha de JavaScript inválido (`codigo sem fundamento ... ;;;`) | Job `validar` falha no `node --check`, antes de chegar ao Sonar | ✅ Falhou como esperado |
+| 2 | Código sem erro de sintaxe, mas sem testes | Arquivo só com `console.log`, sem função testável | Sonar analisa normalmente (não é erro de sintaxe nem regra violada por padrão) | ✅ Passou, sem issues |
+| 3 | Cobertura no código novo | Função nova (`index.js`) sem nenhum teste correspondente | Quality Gate reprova em **Coverage on New Code** (0% contra o mínimo de 80%) | ✅ Reprovou como esperado |
+| 4 | Cobertura corrigida | Adição de testes unitários (`index.test.js`) cobrindo 100% das linhas e ramos | Quality Gate aprova a condição de cobertura | ✅ Passou (100% de cobertura) |
+| 5 | Action de terceiro sem hash fixo | `sonarqube-scan-action@v5` referenciada por tag, não por hash | Quality Gate reprova em **Security Rating** (nota C) | ✅ Reprovou como esperado |
+| 6 | Action fixada por hash | Troca de `@v5` pelo hash completo do commit (`@2f77a1e...`) | Security Rating volta para A | ✅ Passou |
+| 7 | Uso de `npx` no CI | `npx c8 ...` no job de cobertura | Sonar aponta 2 issues de segurança ("npx can install packages on-demand...") | ✅ Reprovou como esperado |
+| 8 | `npx` substituído por script do `npm` | Troca para `npm run coverage`, usando o `c8` já instalado via `npm ci` | Issues de `npx` deixam de existir | ✅ Passou |
+| 9 | `npm ci` sem `--ignore-scripts` | Instalação de dependências sem a flag | Sonar aponta issue de segurança ("Omitting --ignore-scripts allows lifecycle scripts...") | ✅ Reprovou como esperado |
+| 10 | `--ignore-scripts` adicionado | `npm ci --ignore-scripts` nos dois jobs | Issue de scripts de instalação deixa de existir | ✅ Passou |
+| 11 | Branch protegida sem PR | Tentativa de edição direta na `main` pela interface do GitHub | Edição é bloqueada; GitHub força criação de branch e Pull Request | ✅ Bloqueado como esperado |
+| 12 | Merge com check obrigatório ausente | Regra exigindo um check com nome que não existia mais no workflow atual | PR fica preso em "Waiting for status to be reported" indefinidamente | ✅ Reproduzido; corrigido ajustando a lista de checks obrigatórios |
+| 13 | Branch desatualizada em relação à `main` | PR aberto enquanto novos commits entravam na `main` | Botão de merge bloqueado com aviso "This branch is out-of-date" | ✅ Bloqueado como esperado; resolvido com **Update branch** |
+
+Esses testes confirmam que o pipeline cobre, na prática, as três camadas de proteção descritas neste guia: **validação de sintaxe** (job `validar`), **qualidade e segurança do código analisado pelo Sonar** (Quality Gate) e **regras de fluxo do Git** (proteção de branch).
+
 ## Adaptando para outras linguagens
 
 Este repositório usa JavaScript como exemplo, mas a estrutura do pipeline (job de validação → job de análise com cobertura → Sonar) se repete em qualquer linguagem. O que muda são três pontos: o **comando de build/teste**, o **gerador de relatório de cobertura** e a **propriedade do Sonar** que aponta para esse relatório.
@@ -381,7 +404,7 @@ chore: atualiza dependências de desenvolvimento
 
 ### Boas práticas
 
-- **Descrição no imperativo**, como se completasse a frase "esse commit...": `adiciona`, `corrige`, `remove`, e não `adicionado` ou `adicionando`.
+- **Descrição no imperativo**, como se completasse a frase "esse commit vai...": `adiciona`, `corrige`, `remove`, e não `adicionado` ou `adicionando`.
 - **Um commit, uma intenção.** Evitar misturar `feat` com `fix` no mesmo commit; se necessário, separar em commits distintos.
 - **Corpo do commit opcional, para explicar o "porquê"**, quando o título não for suficiente:
   ```
@@ -441,4 +464,4 @@ chore: atualiza dependências de desenvolvimento
 
 **Julio Santos** 💻
 Desenvolvedor de Software
-(Criado em 22/09/2026)
+Criado em 22/09/2026
